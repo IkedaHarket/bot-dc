@@ -1,13 +1,13 @@
 import { Message } from "discord.js";
 import { createAudioResource, StreamType, AudioPlayer, entersState, AudioPlayerStatus } from '@discordjs/voice';
 import IHttpClient from "../http-client/http-client.interface";
-import HttpClient from "../http-client/intex";
+import HttpClient from "../http-client";
 
 class MediaPlayer {
   private _http: IHttpClient;
 
-  constructor() {
-    this._http = new HttpClient();
+  constructor({ httpClient }: {httpClient: IHttpClient}) {
+    this._http = httpClient;
   }
 
   async play(message: Message, player: AudioPlayer):Promise<AudioPlayer> {

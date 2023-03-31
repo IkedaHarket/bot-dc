@@ -15,16 +15,19 @@ class App {
   private mediaPlayer: MediaPlayer;
   private token: string;
   private voice : VoiceChannel;
+  
   constructor({
     token,
-    logger
-    }:{token:string, logger: ILogger}) {
+    logger,
+    mediaPlayer,
+    voice,
+    }:{token:string, logger: ILogger, mediaPlayer: MediaPlayer, voice: VoiceChannel}) {
     this._logger = logger;
     this._openai = new OpenAi();
     this.client = new Client({ intents: [3276799] });
-    this.mediaPlayer = new MediaPlayer();
+    this.mediaPlayer = mediaPlayer;
     this.token = token;
-    this.voice = new VoiceChannel();
+    this.voice = voice;
   }
 
   start() {
@@ -37,11 +40,13 @@ class App {
       if (message.author.bot || !message.content.startsWith(config.prefix)) return;
       this._logger.get(message.content)
 
-      // if(!message.member?.voice.channel) return        
-      // const connection = await this.voice.connectToChannel(message.member?.voice.channel as VoiceBasedChannel)
-      // connection.subscribe(player)
-      // await this.mediaPlayer.play(message, player)
-      // await message.reply('Hojita')
+      if(message.content.startsWith(config.prefix + " p")){
+        if(!message.member?.voice.channel) return  
+        const connection = await this.voice.connectToChannel(message.member?.voice.channel as VoiceBasedChannel)
+        connection.subscribe(player)
+        await this.mediaPlayer.play(message, player)
+        await message.reply('Hojita')
+      }
 
       if(message.content.startsWith(config.prefix + " gpt")){
         const { data } = await this._openai.openAi.createChatCompletion({
